@@ -1,6 +1,8 @@
 <html>
 <head>
 <title>d3.js meets three.js</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <style>
 canvas {
   width: 100%;
@@ -10,6 +12,7 @@ canvas {
 </head>
 <body>
 <script src="js/three.min.js"></script>
+<script src="js/FlyControls.js"></script>
 <script src="js/d3.min.js"></script>
 <script>
  var t = 1297110663;
@@ -97,8 +100,9 @@ canvas {
    attribute.object[attribute.name] = value;
  }
 
- var camera, scene, renderer, chart3d, newBar;
+ var camera, scene, renderer, chart3d, newBar, controls;
 
+ var clock = new THREE.Clock();
  init();
  redraw();
  animate();
@@ -115,6 +119,13 @@ canvas {
 
    camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 1, 1000);
    camera.position.z = 400;
+
+   controls = new THREE.FlyControls(camera);
+   controls.movementSpeed = 1000;
+   controls.domElement = renderer.domElement;
+   controls.rollSpeed = Math.PI / 24;
+   controls.autoForward = false;
+   controls.dragToLook = false;
 
    scene = new THREE.Scene();
 
@@ -148,7 +159,13 @@ canvas {
 
  function animate() {
    requestAnimationFrame(animate);
+
    chart3d.rotation.y += 0.01;
+
+   var delta = clock.getDelta();
+   controls.movementSpeed = 0.33;
+   controls.update(delta);
+
    renderer.render(scene, camera);
  }
 </script>
